@@ -1,0 +1,3 @@
+[submodule "iot-hub-feather-huzzah-client-app"]
+	path = iot-hub-feather-huzzah-client-app
+	url = https://github.com/Azure-Samples/iot-hub-feather-huzzah-client-app.git

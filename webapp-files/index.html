@@ -1,0 +1,661 @@
+<!DOCTYPE HTML>
+<!--
+	Dimension by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>soil smart</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+					<header id="header">
+						<div class="logo">
+							<span class="icon fa-leaf"></span>
+						</div>
+						<div class="content">
+							<div class="inner">
+								<h1>soil smart</h1>
+								<p>Predicting soil moisture responsibly for <br />
+								your personal farming needs</p>
+							</div>
+						</div>
+						<nav>
+							<ul>
+								<li><a href="#intro">Setup</a></li>
+								<li><a href="#mode_one">Predict</a></li>
+								<li><a href="#contact">About</a></li>
+<!-- 								<li><a href="#elements">Elements</a></li> -->
+							</ul>
+						</nav>
+					</header>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Intro -->
+							<article id="intro">
+								<h2 class="major">Project Setup <a href="https://github.com/sayalirkakade/soil-sensor-293s" class="icon fa-github"></a> </h2>
+								<p>Setting up the soil sensor project consisted of three main parts: the hardware setup involving the local sensors, the software setup to collect and analyze weather forecast/local sensor data, and creation of this dashboard UI to help visualize trends and draw conclusions. All of our code and presentation slides can be found in the github repo	by clicking <a href="https://github.com/sayalirkakade/soil-sensor-293s"> here </a> or by clicking the github icons throughout this article.</p>
+								<h3 class="major">Hardware Setup</h3>
+								<ul class="alt">
+										<li>Microcontroller: Adafruit Feather HUZZAH with ESP8266</li>
+										<li>Sensors: Adafruit DHT22 (temperature and humidity), Clyewet CYT1033 (soil moisture)</li>
+										<li>Other Components: LP2950-N voltage regulator, resistors for level shifting</li>
+									</ul>
+								<div class="image row">
+  									<div class="image column">
+    									<img src="images/image1.jpg" alt="" style="width:100%" id="image1">
+  									</div>
+									<div class="image column">
+										<img src="images/image2.jpg" alt="" style="width:100%" id="image2">
+									</div>
+									<div class="image column">
+										<img src="images/image3.jpg" alt="" style="width:100%" id="image3">
+									</div>
+								</div>
+									<p>The hardware components listed above were set up at a local address in Goleta, CA, USA. The images above show how the completed set up looked. These sensors were used to collect data on local humidity, local temperature, and local soil moisture levels for this specific plant. Using our own hardware allowed us to ensure the integrity of the data that we went on to use for analysis. Using the ESP8266, we were able to send the measurements that the sensors collected to an IoT hub in Azure, and reroute the data into Azure Storage (described further in software setup). Hardware programming code can be found at the github link: <a href="https://github.com/sayalirkakade/soil-sensor-293s" class="icon fa-github"></a> </p>
+								<h3 class="major">Software Setup</h3>
+								<p> Our software setup can be described as the various tasks that we needed to handle and the tools we used to approach these tasks. All of our code can be found here: <a href="https://github.com/sayalirkakade/soil-sensor-293s" class="icon fa-github"></a> </p>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr>
+													<th>Task</th>
+													<th>Tools</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Program ESP8266 to collect sensor data and upload to Azure.</td>
+													<td>Arduino IDE</td>
+												</tr>
+												<tr>
+													<td>Redirect messages incoming from ESP8266 to IoT Hub in Azure to Azure Storage Blob.</td>
+													<td>Azure GUI</td>
+												</tr>
+												<tr>
+													<td>Parse Azure blobs to extract local sensor data, combine with Dark Sky API data and store in Azure table.</td>
+													<td>Python Libraries: Azure Storage, Dark Sky API; Linux crontab (for automation)</td>
+												</tr>
+												<tr>
+													<td>Clean data and run analytics. Store predictions and ML model.</td>
+													<td>Python Libraries: Numpy, Pandas, Scikit-Learn; Linux crontab (for automation)</td>
+												</tr>
+												<tr>
+													<td>Develop dashboard to display predictions and insights on soil moisture levels.</td>
+													<td>amCharts Graphs</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								<h3 class="major">Dashboard Usage</h3>
+								<p>The <a href="#mode_one"">dashboard</a> (as shown in the images) has two main features. At the top of the dashboard, the first graph shows the current soil moisture readings and the predicted soil moisture (based on that reading and the weather forecast from Dark Sky API) for the next 24 hours: </p> 
+								<span class="image main"><figure><img src="images/dashboard1.jpg" alt="" /><figcaption><b>[Image 1] Dashboard: Current Predictions</b></figcaption></figure></span>
+								<p>This graph is specific to the hardware setup that we have in Goleta, CA as described above and the Dark Sky API request data which is also specific to Goleta, CA. At the bottom of the dashboard, another feature helps users maintain healthy soil moisture levels for their specific plant. Users can fill out the form provided to indicate when they plan on watering their plant and how much water they will give: </p>
+								<span class="image main"><figure><img src="images/dashboard2.jpg" alt="" /><figcaption><b>[Image 2] Dashboard: Recommendation Form</b></figcaption></figure></span>
+								<p>Upon submitting the form, a second graph and a watering recommendation will be displayed: </p>
+								<span class="image main"><figure><img src="images/dashboard3.jpg" alt="" /><figcaption><b>[Image 3] Dashboard: Recommendation Prediction Output</b></figcaption></figure></span>
+								<p>The watering recommendation is based on the type of plant that the user indicates in the form, since different plants have different ideal soil moisture ranges. The recommendation will either tell users to water their plant less (soil moisture levels too high), that the conditions stay within the ideal range throughout the next 24 hours, or will tell a user how much water to give their plant and at what time. The time is based on when the soil moisture level is predicted to go below the ideal range, and the amount of water is based on the pot size that the user provides, with the assumption that the pot is 4/5 full of soil. For a more detailed explanation of the data analysis leading to specific predictions, take a look at our presentation slides on the github repo: <a href="https://github.com/sayalirkakade/soil-sensor-293s" class="icon fa-github"></a></p>
+							</article>
+
+						<!-- Prediction Mode One -->
+							<article id="mode_one">
+								<h2 class="major">Prediction Mode</h2>
+								<h3>Current Soil Moisture Conditions & Forecast</h3>
+								<p>The following graph shows the current soil moisture reading and predicted soil moisture values over the next 24 hours for our local plant set up in Goleta, California. The sensor set up, data collection, and analysis process used to calculate the predictions is described extensively <a href="#intro">here</a>. </p>
+								<div id="chartdiv"></div>
+								<br></br>
+								<h3>Soil Moisture Predictions After Watering</h3>
+								<p>To predict future soil moisture levels after watering your plant at a certain time, fill out the information in the following form as described and hit the submit button. </p>
+								<form action="javascript:;" onsubmit="myFunction(this)">
+									<div class="fields">
+										<div class="field half">
+											<label for="potHeight">Pot Height (centimeters)</label>
+											<input type="number" name="potHeight" min="0" id="potHeight" />
+										</div>
+										<div class="field half">
+											<label for="potDiameter">Pot Diameter (centimeters)</label>
+											<input type="number" name="potDiameter" min="0" id="potDiameter" />
+										</div>
+										<div class="field half">
+											<label for="potBaseDiameter">Pot Base Diameter (cm)</label>
+											<input type="number" name="potBaseDiameter" min="0"id="potBaseDiameter" />
+										</div>
+										<div class="field half">
+											<label for="plantType">Plant Type</label>
+											<select name="plantType" id="plantType">
+											    <option value="cactus">Cactus</option> 
+   												<option value="succulent">Succulent</option>
+    											<option value="flowers">Flower</option>
+    											<option value="vegetable">Vegetable</option> 
+   												<option value="fruit">Fruit</option>
+    											<option value="treeShrub">Tree or Shrub</option>
+											</select>
+										</div>
+										<div class="field half">
+											<label for="waterAmount">Water Amount (in cups)</label>
+											<input type="number" name="waterAmount" min="0" id="waterAmount" />
+										</div>
+										<div class="field half">
+											<label for="timeDay">Time of Day</label>
+											<input type="time" name="timeDay" id="timeDay" step="3600" />
+											</select>
+										</div>
+									</div>
+									<ul class="actions">
+										<li><input type="submit" value="Submit" class="primary" /></li>
+										<li><input type="reset" value="Reset" /></li>
+									</ul>
+								</form>
+								<div id="prescriptiveText" style="display: none">
+									<h4 class="major"> Watering Recommendation </h4>
+									<p id="prescriptiveSuggestion"></p>
+								</div>
+								<div id="predictionchartdiv" style="display: none">
+								</div>
+							</article>
+
+						<!-- Contact -->
+							<article id="contact">
+								<h2 class="major">About Us</h2>
+								<div class="image row">
+  									<div class="image column">
+    									<img src="images/chowdhury.jpg" alt="" style="width:100%" id="chowdhury">
+  									</div>
+									<div class="image column">
+										<img src="images/kakade.jpg" alt="" style="width:100%" id="kakade">
+									</div>
+									<div class="image column">
+										<img src="images/wadaskar.jpg" alt="" style="width:100%" id="wadaskar">
+									</div>
+								</div>
+								<br></br>
+								<p>Hi! We are Himangshu Chowdhury (5th year BS/MS), Sayali Kakade (4th year BS), and Aditya Wadaskar (4th year BS). All of us are computer engineering students at UCSB. Soil Smart was developed as our final project for our class CMPSC 293s Internet of Things during Winter 2019. </p>
+								<p>For any further questions or comments, feel free to contact us at himangshuchowdhury@ucsb.edu, sayalikakade@ucsb.edu, or aditya_wadaskar@ucsb.edu respectively.</p>
+							</article>
+
+						<!-- Elements -->
+							<article id="elements">
+								<h2 class="major">Elements</h2>
+
+								<section>
+									<h3 class="major">Text</h3>
+									<p>This is <b>bold</b> and this is <strong>strong</strong>. This is <i>italic</i> and this is <em>emphasized</em>.
+									This is <sup>superscript</sup> text and this is <sub>subscript</sub> text.
+									This is <u>underlined</u> and this is code: <code>for (;;) { ... }</code>. Finally, <a href="#">this is a link</a>.</p>
+									<hr />
+									<h2>Heading Level 2</h2>
+									<h3>Heading Level 3</h3>
+									<h4>Heading Level 4</h4>
+									<h5>Heading Level 5</h5>
+									<h6>Heading Level 6</h6>
+									<hr />
+									<h4>Blockquote</h4>
+									<blockquote>Fringilla nisl. Donec accumsan interdum nisi, quis tincidunt felis sagittis eget tempus euismod. Vestibulum ante ipsum primis in faucibus vestibulum. Blandit adipiscing eu felis iaculis volutpat ac adipiscing accumsan faucibus. Vestibulum ante ipsum primis in faucibus lorem ipsum dolor sit amet nullam adipiscing eu felis.</blockquote>
+									<h4>Preformatted</h4>
+									<pre><code>i = 0;
+
+while (!deck.isInOrder()) {
+    print 'Iteration ' + i;
+    deck.shuffle();
+    i++;
+}
+
+print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
+								</section>
+
+								<section>
+									<h3 class="major">Lists</h3>
+
+									<h4>Unordered</h4>
+									<ul>
+										<li>Dolor pulvinar etiam.</li>
+										<li>Sagittis adipiscing.</li>
+										<li>Felis enim feugiat.</li>
+									</ul>
+
+									<h4>Alternate</h4>
+									<ul class="alt">
+										<li>Dolor pulvinar etiam.</li>
+										<li>Sagittis adipiscing.</li>
+										<li>Felis enim feugiat.</li>
+									</ul>
+
+									<h4>Ordered</h4>
+									<ol>
+										<li>Dolor pulvinar etiam.</li>
+										<li>Etiam vel felis viverra.</li>
+										<li>Felis enim feugiat.</li>
+										<li>Dolor pulvinar etiam.</li>
+										<li>Etiam vel felis lorem.</li>
+										<li>Felis enim et feugiat.</li>
+									</ol>
+									<h4>Icons</h4>
+									<ul class="icons">
+										<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+										<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+										<li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+										<li><a href="#" class="icon fa-github"><span class="label">Github</span></a></li>
+									</ul>
+
+									<h4>Actions</h4>
+									<ul class="actions">
+										<li><a href="#" class="button primary">Default</a></li>
+										<li><a href="#" class="button">Default</a></li>
+									</ul>
+									<ul class="actions stacked">
+										<li><a href="#" class="button primary">Default</a></li>
+										<li><a href="#" class="button">Default</a></li>
+									</ul>
+								</section>
+
+								<section>
+									<h3 class="major">Table</h3>
+									<h4>Default</h4>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr>
+													<th>Name</th>
+													<th>Description</th>
+													<th>Price</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Item One</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Two</td>
+													<td>Vis ac commodo adipiscing arcu aliquet.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Three</td>
+													<td> Morbi faucibus arcu accumsan lorem.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Four</td>
+													<td>Vitae integer tempus condimentum.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Five</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+											</tbody>
+											<tfoot>
+												<tr>
+													<td colspan="2"></td>
+													<td>100.00</td>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+
+									<h4>Alternate</h4>
+									<div class="table-wrapper">
+										<table class="alt">
+											<thead>
+												<tr>
+													<th>Name</th>
+													<th>Description</th>
+													<th>Price</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr>
+													<td>Item One</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Two</td>
+													<td>Vis ac commodo adipiscing arcu aliquet.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Three</td>
+													<td> Morbi faucibus arcu accumsan lorem.</td>
+													<td>29.99</td>
+												</tr>
+												<tr>
+													<td>Item Four</td>
+													<td>Vitae integer tempus condimentum.</td>
+													<td>19.99</td>
+												</tr>
+												<tr>
+													<td>Item Five</td>
+													<td>Ante turpis integer aliquet porttitor.</td>
+													<td>29.99</td>
+												</tr>
+											</tbody>
+											<tfoot>
+												<tr>
+													<td colspan="2"></td>
+													<td>100.00</td>
+												</tr>
+											</tfoot>
+										</table>
+									</div>
+								</section>
+
+								<section>
+									<h3 class="major">Buttons</h3>
+									<ul class="actions">
+										<li><a href="#" class="button primary">Primary</a></li>
+										<li><a href="#" class="button">Default</a></li>
+									</ul>
+									<ul class="actions">
+										<li><a href="#" class="button">Default</a></li>
+										<li><a href="#" class="button small">Small</a></li>
+									</ul>
+									<ul class="actions">
+										<li><a href="#" class="button primary icon fa-download">Icon</a></li>
+										<li><a href="#" class="button icon fa-download">Icon</a></li>
+									</ul>
+									<ul class="actions">
+										<li><span class="button primary disabled">Disabled</span></li>
+										<li><span class="button disabled">Disabled</span></li>
+									</ul>
+								</section>
+
+								<section>
+									<h3 class="major">Form</h3>
+									<form method="post" action="#">
+										<div class="fields">
+											<div class="field half">
+												<label for="demo-name">Name</label>
+												<input type="text" name="demo-name" id="demo-name" value="" placeholder="Jane Doe" />
+											</div>
+											<div class="field half">
+												<label for="demo-email">Email</label>
+												<input type="email" name="demo-email" id="demo-email" value="" placeholder="jane@untitled.tld" />
+											</div>
+											<div class="field">
+												<label for="demo-category">Category</label>
+												<select name="demo-category" id="demo-category">
+													<option value="">-</option>
+													<option value="1">Manufacturing</option>
+													<option value="1">Shipping</option>
+													<option value="1">Administration</option>
+													<option value="1">Human Resources</option>
+												</select>
+											</div>
+											<div class="field half">
+												<input type="radio" id="demo-priority-low" name="demo-priority" checked>
+												<label for="demo-priority-low">Low</label>
+											</div>
+											<div class="field half">
+												<input type="radio" id="demo-priority-high" name="demo-priority">
+												<label for="demo-priority-high">High</label>
+											</div>
+											<div class="field half">
+												<input type="checkbox" id="demo-copy" name="demo-copy">
+												<label for="demo-copy">Email me a copy</label>
+											</div>
+											<div class="field half">
+												<input type="checkbox" id="demo-human" name="demo-human" checked>
+												<label for="demo-human">Not a robot</label>
+											</div>
+											<div class="field">
+												<label for="demo-message">Message</label>
+												<textarea name="demo-message" id="demo-message" placeholder="Enter your message" rows="6"></textarea>
+											</div>
+										</div>
+										<ul class="actions">
+											<li><input type="submit" value="Send Message" class="primary" /></li>
+											<li><input type="reset" value="Reset" /></li>
+										</ul>
+									</form>
+								</section>
+
+							</article>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<p class="copyright">&copy; CS293S W19 Soil Sensor Project. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+					</footer>
+
+			</div>
+
+		<!-- BG -->
+			<div id="bg"></div>
+
+		<!-- Styles -->
+			<style>
+				#chartdiv {
+				  width: 100%;
+				  height: 500px;
+				}
+			</style>
+
+			<style>
+				#predictionchartdiv {
+					width: 100%;
+					height: 500px;
+				}
+			</style>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/azure-storage.table.js"></script>
+			<script src="https://www.amcharts.com/lib/4/core.js"></script>
+			<script src="https://www.amcharts.com/lib/4/charts.js"></script>
+			<script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+
+			<script>
+
+				// Themes begin
+				am4core.useTheme(am4themes_animated);
+				// Themes end
+
+				// Create chart instance
+				var chart = am4core.create("chartdiv", am4charts.XYChart);
+				chart.paddingRight = 20;
+
+				// Import data from Azure table and export to chart data
+				var tableUri = 'https://soilhumiditydata293s.table.core.windows.net';
+				var tableService = AzureStorage.Table.createTableServiceWithSas(tableUri, '?sv=2018-03-28&ss=bfqt&srt=sco&sp=rwdlacup&se=2019-04-02T00:46:15Z&st=2019-03-06T17:46:15Z&spr=https&sig=%2BO%2BdmclRL08EjYWTw29lzwq4VRY5A0G5u1%2FajYXJ64c%3D');
+				
+				chartData = [];
+				var tableQuery = new AzureStorage.Table.TableQuery().top(200);
+				tableService.queryEntities('predictedSoilMoistureMessages', tableQuery, null, function (error, results) {
+					if (!error) {
+						for (var i = 0, entity; entity = results.entries[i]; i++) {
+							var date = new Date(entity.PartitionKey._);
+							date.setHours(date.getHours() - 8);
+							var moisture = parseInt(entity.soilmoistureprediction._/6.5);
+							chartData.push({
+								date: date,
+								moisture: moisture
+							});
+						}
+					}
+					chart.data = chartData;
+					var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+					dateAxis.baseInterval = {
+					  "timeUnit": "hour",
+					  "count": 1
+					};
+					dateAxis.tooltipDateFormat = "HH:mm, d MMMM";
+					dateAxis.renderer.labels.template.fill = am4core.color("#A0CA92");
+
+					var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+					valueAxis.renderer.labels.template.fill = am4core.color("#A0CA92");
+					valueAxis.tooltip.disabled = true;
+					valueAxis.title.fill = am4core.color("#A0CA92");
+					valueAxis.title.text = "Soil Moisture Percentage";
+					valueAxis.max = 90;
+					valueAxis.min = 0;
+
+					var series = chart.series.push(new am4charts.LineSeries());
+					series.dataFields.dateX = "date";
+					series.dataFields.valueY = "moisture";
+					series.tooltipText = "Moisture: [bold]{valueY}[/]";
+					series.fillOpacity = 0.3;
+
+					chart.cursor = new am4charts.XYCursor();
+					chart.cursor.lineY.opacity = 0;
+					chart.scrollbarX = new am4charts.XYChartScrollbar();
+					chart.scrollbarX.series.push(series);
+
+					chart.events.on("datavalidated", function () {
+						dateAxis.zoom({start:0.8, end:1});
+					});
+				});
+
+				function idealPlantMoisture(plant) {
+					
+				  	return [plantMin, plantMax];
+				}
+
+				function myFunction(formdata) {
+					document.getElementById("predictionchartdiv").style.display = "block";
+					document.getElementById("prescriptiveText").style.display = "block";
+					var potHeight = formdata.elements[0].value;
+					var potDia = formdata.elements[1].value;
+					var potBaseDia = formdata.elements[2].value;
+					var plant = formdata.elements[3].value;
+					var water = formdata.elements[4].value;
+					var timeOfDay = formdata.elements[5].value;
+					var dryFlag = 0;
+					var dryTime = 0;
+					var moistureAdded = 0;
+					var cups = 0;
+					var prescriptiveText = "";
+					var plantMax = 0;
+				  	var plantMin = 0;
+				  	if (plant == "cactus" || plant == "treeShrub") {
+				  		plantMin = 21;
+				  		plantMax = 40;
+				  	} else if (plant == "succulent") {
+				  		plantMin = 41;
+				  		plantMax = 60;
+				  	} else if (plant == "flowers" || plant == "fruit") {
+				  		plantMin = 21;
+				  		plantMax = 60;
+				  	} else if (plant == "vegetable") {
+				  		plantMin = 41;
+				  		plantMax = 80;
+				  	}
+				  	if (timeOfDay[0] != 0) {
+				  		var hoursOfDay = timeOfDay[0] + timeOfDay[1];
+				  	} else {
+				  		var hoursOfDay = timeOfDay[1];
+				  	}
+				  	for (i = 0; i < 25; i ++) {
+				  		var chartDate = window.chartData[i].date;
+					  	if (window.chartData[i].moisture <= plantMin && dryFlag == 0) {
+							dryTime = chartDate.getHours();
+							dryFlag = 1;
+							moistureAdded = ((plantMin + plantMax) * 0.75) - window.chartData[i].moisture;
+						}
+					}
+				  	// Themes begin
+				  	am4core.useTheme(am4themes_animated);
+					// Themes end
+
+					// Create chart instance
+					var chart = am4core.create("predictionchartdiv", am4charts.XYChart);
+					chart.paddingRight = 20;
+
+					// Import data from Azure table and export to chart data
+					var tableUri = 'https://soilhumiditydata293s.table.core.windows.net';
+					var tableService = AzureStorage.Table.createTableServiceWithSas(tableUri, '?sv=2018-03-28&ss=bfqt&srt=sco&sp=rwdlacup&se=2019-04-02T00:46:15Z&st=2019-03-06T17:46:15Z&spr=https&sig=%2BO%2BdmclRL08EjYWTw29lzwq4VRY5A0G5u1%2FajYXJ64c%3D');
+					
+					var flag = 0;
+					var chartData = [];
+					var tableQuery = new AzureStorage.Table.TableQuery().top(200);
+					tableService.queryEntities('predictedSoilMoistureMessages', tableQuery, null, function (error, results) {
+						if (!error) {
+							for (var i = 0, entity; entity = results.entries[i]; i++) {
+								var date = new Date(entity.PartitionKey._);
+								date.setHours(date.getHours() - 8);
+								var moisture = parseInt(entity.soilmoistureprediction._/6.5);
+								if (date.getHours() == hoursOfDay || flag == 1) {
+									flag = 1;
+									moisture = moisture + (60 * water * 236.588) / (Math.PI * potHeight * (Math.pow(potDia, 2) + Math.pow(potBaseDia, 2) + (potDia * potBaseDia)));
+									moisture = parseInt(moisture);
+								}
+ 								chartData.push({
+									date: date,
+									moisture: moisture
+								});
+							}
+						}
+						if (dryFlag == 1) {
+							if (dryTime > 12) {
+								ampm = "PM";
+								dryTime = dryTime % 12;
+							} else if (dryTime >= 0) {
+								ampm = "AM";
+							}
+	 						cups = parseInt((moistureAdded * Math.PI * potHeight * (Math.pow(potDia, 2) + Math.pow(potBaseDia, 2) + (potDia * potBaseDia))) / (60 * 236.588));
+	 						if (cups == 1) {
+	 							var plural = " cup ";
+	 						} else {
+	 							var plural = " cups ";
+	 						}
+							prescriptiveText += "Add " + cups + plural + "of water at " + dryTime + " " + ampm + " to maintain ideal soil moisture level.";
+						} else {
+							prescriptiveText = "Your plant is at or above your ideal moisture level.";
+						}
+						document.getElementById("prescriptiveSuggestion").innerHTML = prescriptiveText;
+						chart.data = chartData;
+						var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+						dateAxis.baseInterval = {
+						  "timeUnit": "hour",
+						  "count": 1
+						};
+						dateAxis.tooltipDateFormat = "HH:mm, d MMMM";
+						dateAxis.renderer.labels.template.fill = am4core.color("#A0CA92");
+
+						var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+						valueAxis.renderer.labels.template.fill = am4core.color("#A0CA92");
+						valueAxis.tooltip.disabled = true;
+						valueAxis.title.fill = am4core.color("#A0CA92");
+						valueAxis.title.text = "Soil Moisture Percentage";
+						valueAxis.max = 90;
+						valueAxis.min = 0;
+
+						var series = chart.series.push(new am4charts.LineSeries());
+						series.dataFields.dateX = "date";
+						series.dataFields.valueY = "moisture";
+						series.tooltipText = "Moisture: [bold]{valueY}[/]";
+						series.fillOpacity = 0.3;
+
+						chart.cursor = new am4charts.XYCursor();
+						chart.cursor.lineY.opacity = 0;
+						chart.scrollbarX = new am4charts.XYChartScrollbar();
+						chart.scrollbarX.series.push(series);
+
+						chart.events.on("datavalidated", function () {
+							dateAxis.zoom({start:0.8, end:1});
+						});
+					});
+			  	}
+			</script>
+
+	</body>
+</html>
